@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ChevronDown, Mail, Phone, Award, Building2, Users, Calendar, Play, Globe, ArrowRight, Leaf, TreePine } from 'lucide-react';
+import { ChevronDown, Mail, Phone, Award, Building2, Users, Calendar, Play, Globe, ArrowRight, Gem } from 'lucide-react';
 
 const translations = {
   cs: {
@@ -120,26 +120,73 @@ function AnimatedCounter({ end, duration = 800, suffix = '' }: { end: number; du
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
-function TiltCard3D({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function CubisticCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState('');
-  const [glare, setGlare] = useState({ x: 50, y: 50 });
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
-    setTransform(`perspective(1000px) rotateX(${(y - 0.5) * -15}deg) rotateY(${(x - 0.5) * 15}deg) scale3d(1.02, 1.02, 1.02)`);
-    setGlare({ x: x * 100, y: y * 100 });
+    setTransform(`perspective(1000px) rotateX(${(y - 0.5) * -6}deg) rotateY(${(x - 0.5) * 6}deg) scale3d(1.02, 1.02, 1.02)`);
   }, []);
   const handleMouseLeave = useCallback(() => {
     setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
-    setGlare({ x: 50, y: 50 });
   }, []);
   return (
     <div ref={cardRef} className={`relative transition-all duration-500 ease-out ${className}`} style={{ transform, transformStyle: 'preserve-3d' }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
       {children}
-      <div className="absolute inset-0 pointer-events-none rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.2) 0%, transparent 60%)` }} />
+    </div>
+  );
+}
+
+function MarbleBackground() {
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="absolute inset-0" style={{ 
+        backgroundImage: 'url(https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1920&q=90)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        filter: 'brightness(1.1) contrast(0.95)'
+      }} />
+      <div className="absolute inset-0" style={{ 
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(250,248,245,0.5) 50%, rgba(255,255,255,0.7) 100%)' 
+      }} />
+      <div className="absolute top-20 left-10 w-32 h-32 opacity-10" style={{ 
+        background: 'linear-gradient(135deg, #8B4513 0%, #A0522D 100%)',
+        clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+        transform: 'rotate(15deg)'
+      }} />
+      <div className="absolute top-40 right-20 w-24 h-24 opacity-8" style={{ 
+        background: 'linear-gradient(45deg, #1F2937 0%, #374151 100%)',
+        clipPath: 'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+        transform: 'rotate(-10deg)'
+      }} />
+    </div>
+  );
+}
+
+function CubisticShapes() {
+  const scrollY = useParallax();
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute top-1/4 right-10 w-20 h-20" style={{ 
+        transform: `translateY(${scrollY * 0.1}px) rotate(${scrollY * 0.02}deg)`,
+        background: 'linear-gradient(135deg, rgba(184,92,56,0.15) 0%, rgba(139,69,19,0.1) 100%)',
+        boxShadow: '10px 10px 30px rgba(0,0,0,0.15)',
+        clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+      }} />
+      <div className="absolute top-1/2 left-5 w-16 h-24" style={{ 
+        transform: `translateY(${scrollY * -0.08}px) rotate(-5deg)`,
+        background: 'linear-gradient(180deg, rgba(31,41,55,0.12) 0%, rgba(55,65,81,0.08) 100%)',
+        boxShadow: '8px 8px 25px rgba(0,0,0,0.12)',
+        clipPath: 'polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)'
+      }} />
+      <div className="absolute bottom-1/3 right-1/4 w-12 h-12" style={{ 
+        transform: `translateY(${scrollY * 0.15}px) rotate(45deg)`,
+        background: 'linear-gradient(45deg, rgba(212,165,116,0.2) 0%, rgba(184,149,110,0.15) 100%)',
+        boxShadow: '6px 6px 20px rgba(0,0,0,0.1)'
+      }} />
     </div>
   );
 }
@@ -156,22 +203,29 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
     return () => clearInterval(interval);
   }, [onComplete]);
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-emerald-950">
-      <div className="absolute inset-0">
-        <img src="https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=1920&q=90" alt="Living wall" className="w-full h-full object-cover opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/80 via-emerald-900/60 to-emerald-950/90" />
-      </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ 
+      backgroundImage: 'url(https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1920&q=90)',
+      backgroundSize: 'cover'
+    }}>
+      <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.85)' }} />
+      <div className="absolute top-20 left-20 w-16 h-16 animate-pulse" style={{ 
+        background: 'linear-gradient(135deg, #B85C38 0%, #8B4513 100%)',
+        clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+        opacity: 0.3
+      }} />
       <div className="relative z-10 text-center">
-        <div className="mb-8 relative">
-          <Leaf className="w-20 h-20 text-emerald-400 mx-auto animate-pulse" />
-          <div className="absolute inset-0 flex items-center justify-center"><div className="w-24 h-24 border-2 border-emerald-400/30 rounded-full animate-ping" /></div>
+        <Gem className="w-16 h-16 mx-auto mb-8" style={{ color: '#8B4513', filter: 'drop-shadow(0 0 20px rgba(139,69,19,0.4))' }} />
+        <h1 className="text-5xl font-bold tracking-wider mb-2" style={{ 
+          background: 'repeating-linear-gradient(0deg, #B85C38 0px, #B85C38 8px, #8B4513 8px, #8B4513 10px)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          filter: 'drop-shadow(3px 3px 6px rgba(0,0,0,0.3))'
+        }}>JAKUB CIGLER</h1>
+        <p className="text-sm tracking-widest mb-8" style={{ color: '#8B4513' }}>ARCHITEKTI</p>
+        <div className="w-48 h-2 mx-auto overflow-hidden" style={{ background: 'rgba(139,69,19,0.2)', clipPath: 'polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%)' }}>
+          <div className="h-full transition-all duration-300" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #B85C38, #8B4513, #D4A574)' }} />
         </div>
-        <h1 className="text-4xl font-light text-white mb-2 tracking-widest">JAKUB CIGLER</h1>
-        <p className="text-emerald-400 text-sm tracking-widest mb-8">ARCHITEKTI</p>
-        <div className="w-64 h-1 bg-emerald-900 rounded-full overflow-hidden mx-auto">
-          <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-300 transition-all duration-100 ease-out" style={{ width: `${progress}%` }} />
-        </div>
-        <p className="text-emerald-500/60 text-xs mt-4 tracking-widest">{progress}%</p>
+        <p className="mt-4 text-sm font-medium" style={{ color: '#6B7280' }}>{progress}%</p>
       </div>
     </div>
   );
@@ -185,15 +239,32 @@ function Navigation() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-emerald-950/95 backdrop-blur-xl shadow-2xl' : 'bg-transparent'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3"><Leaf className="w-8 h-8 text-emerald-400" /><span className="text-white font-light text-xl tracking-widest">JCA</span></div>
-        <div className="hidden md:flex items-center gap-8">
-          {Object.entries(t.nav).map(([key, value]) => (<button key={key} onClick={() => document.getElementById(key)?.scrollIntoView({ behavior: 'smooth' })} className="text-white/70 hover:text-emerald-400 transition-colors text-sm tracking-wider uppercase">{value}</button>))}
+    <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled ? 'py-3' : 'py-6'}`} style={{ 
+      background: scrolled ? 'rgba(255,255,255,0.9)' : 'transparent', 
+      backdropFilter: scrolled ? 'blur(20px)' : 'none', 
+      borderBottom: scrolled ? '2px solid rgba(139,69,19,0.2)' : 'none',
+      clipPath: scrolled ? 'polygon(0% 0%, 100% 0%, 98% 100%, 2% 100%)' : 'none'
+    }} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Gem className="w-8 h-8" style={{ color: '#8B4513' }} />
+          <span className="text-xl font-bold tracking-wider" style={{ color: '#1F2937' }}>JCA</span>
         </div>
-        <div className="flex items-center gap-2">
-          {(['cs', 'en', 'zh', 'ar'] as Language[]).map(l => (<button key={l} onClick={() => setLang(l)} className={`px-2 py-1 text-xs rounded transition-all ${lang === l ? 'bg-emerald-500 text-white' : 'text-white/50 hover:text-white'}`}>{l.toUpperCase()}</button>))}
+        <div className="hidden md:flex items-center gap-8">
+          {[{ key: 'profile', id: 'about' }, { key: 'projects', id: 'projects' }, { key: 'awards', id: 'awards' }, { key: 'videos', id: 'videos' }, { key: 'contact', id: 'contact' }].map(item => (
+            <button key={item.key} onClick={() => scrollTo(item.id)} className="text-sm font-medium tracking-wide transition-all duration-300 hover:opacity-100 opacity-70" style={{ color: '#374151' }}>{t.nav[item.key as keyof typeof t.nav]}</button>
+          ))}
+        </div>
+        <div className="flex items-center gap-1">
+          {(['cs', 'en', 'zh', 'ar'] as Language[]).map(l => (
+            <button key={l} onClick={() => setLang(l)} className={`px-3 py-1 text-xs font-medium transition-all duration-300 ${lang === l ? 'text-white' : 'opacity-60 hover:opacity-100'}`} style={{ 
+              background: lang === l ? 'linear-gradient(135deg, #B85C38, #8B4513)' : 'transparent', 
+              color: lang === l ? 'white' : '#374151',
+              clipPath: 'polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)'
+            }}>{l.toUpperCase()}</button>
+          ))}
         </div>
       </div>
     </nav>
@@ -203,26 +274,39 @@ function Navigation() {
 function HeroSection() {
   const { t, isRTL } = useLanguage();
   const scrollY = useParallax();
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   return (
-    <section id="profile" className="relative h-screen overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="absolute inset-0">
-        <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=1920&q=95" alt="Modern green architecture" className="w-full h-full object-cover" style={{ transform: `scale(1.1) translateY(${scrollY * 0.2}px)` }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/70 via-emerald-900/40 to-emerald-950/90" />
+        <img src="https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1920&q=95" alt="Marble texture" className="w-full h-full object-cover" style={{ transform: `translateY(${scrollY * 0.2}px)`, filter: 'brightness(1.1)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(250,248,245,0.7) 50%, rgba(255,255,255,0.8) 100%)' }} />
       </div>
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1486718448742-163732cd1544?w=800&q=90" alt="Architecture" className="absolute top-20 right-10 w-64 h-40 object-cover rounded-lg shadow-2xl opacity-60" style={{ transform: `translateY(${scrollY * 0.3}px) rotate(3deg)` }} />
-        <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&q=90" alt="Architecture" className="absolute bottom-40 left-10 w-48 h-32 object-cover rounded-lg shadow-2xl opacity-50" style={{ transform: `translateY(${scrollY * -0.2}px) rotate(-2deg)` }} />
+      <CubisticShapes />
+      <div className="absolute top-24 left-8 w-28 h-28 opacity-30" style={{ transform: `translateY(${scrollY * 0.15}px) rotate(-5deg)` }}>
+        <img src="https://images.unsplash.com/photo-1486718448742-163732cd1544?w=400&q=90" alt="" className="w-full h-full object-cover" style={{ clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)', boxShadow: '10px 10px 30px rgba(0,0,0,0.2)' }} />
       </div>
-      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-        <div className="mb-6"><Leaf className="w-16 h-16 text-emerald-400 mx-auto mb-4 animate-pulse" /></div>
-        <h1 className="text-6xl md:text-8xl font-extralight text-white mb-4 tracking-widest">JAKUB CIGLER</h1>
-        <p className="text-emerald-400 text-xl md:text-2xl tracking-widest mb-2">ARCHITEKTI</p>
-        <p className="text-white/60 text-lg mb-12 max-w-2xl">{t.hero.tagline}</p>
-        <Button onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })} className="bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 hover:scale-105 shadow-xl shadow-emerald-500/30">{t.hero.cta}<ArrowRight className="ml-2 w-5 h-5" /></Button>
+      <div className="relative z-10 text-center px-6 max-w-5xl">
+        <Gem className="w-14 h-14 mx-auto mb-6" style={{ color: '#8B4513', filter: 'drop-shadow(0 4px 8px rgba(139,69,19,0.3))' }} />
+        <h1 className="text-6xl md:text-8xl font-black tracking-wider mb-4" style={{
+          background: 'repeating-linear-gradient(0deg, #B85C38 0px, #B85C38 6px, #8B4513 6px, #8B4513 8px, #A0522D 8px, #A0522D 14px, #654321 14px, #654321 16px)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          filter: 'drop-shadow(4px 4px 0 rgba(101,67,33,0.4)) drop-shadow(8px 8px 15px rgba(0,0,0,0.3))',
+          letterSpacing: '0.1em'
+        }}>JAKUB CIGLER</h1>
+        <p className="text-lg tracking-widest mb-2 font-semibold" style={{ color: '#8B4513' }}>{t.hero.subtitle.toUpperCase()}</p>
+        <p className="text-lg mb-12 font-light" style={{ color: '#6B7280' }}>{t.hero.tagline}</p>
+        <Button onClick={() => scrollTo('projects')} className="group px-8 py-6 text-white font-medium transition-all duration-500 hover:scale-105" style={{ 
+          background: 'linear-gradient(135deg, #B85C38, #8B4513)',
+          boxShadow: '0 15px 35px -10px rgba(139,69,19,0.4), 8px 8px 0 rgba(101,67,33,0.3)',
+          clipPath: 'polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%)'
+        }}>
+          {t.hero.cta} <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </Button>
       </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce"><ChevronDown className="w-8 h-8 text-emerald-400" /></div>
-      <div className="absolute left-0 top-0 bottom-0 w-20 overflow-hidden"><img src="https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=400&q=90" alt="Living wall" className="w-full h-full object-cover opacity-60" /><div className="absolute inset-0 bg-gradient-to-r from-transparent to-emerald-950" /></div>
-      <div className="absolute right-0 top-0 bottom-0 w-20 overflow-hidden"><img src="https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=400&q=90" alt="Living wall" className="w-full h-full object-cover opacity-60" /><div className="absolute inset-0 bg-gradient-to-l from-transparent to-emerald-950" /></div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <ChevronDown className="w-8 h-8" style={{ color: '#8B4513' }} />
+      </div>
     </section>
   );
 }
@@ -232,23 +316,32 @@ function AboutSection() {
   const { ref, isInView } = useInView();
   const stats = [{ icon: Calendar, value: 2001, label: t.about.founded }, { icon: Users, value: 50, suffix: '+', label: t.about.team }, { icon: Building2, value: 8, label: t.about.projects }, { icon: Award, value: 8, label: t.about.awards }];
   return (
-    <section className="relative py-32 overflow-hidden bg-emerald-950" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="absolute inset-0"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=90" alt="Modern office" className="w-full h-full object-cover opacity-10" /></div>
+    <section id="about" className="relative py-32 overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
+      <MarbleBackground />
+      <CubisticShapes />
       <div ref={ref} className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className={`relative transition-all duration-1000 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'}`}>
-            <div className="relative">
-              <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=95" alt="JCA Office" className="w-full h-96 object-cover rounded-2xl shadow-2xl" />
-              <div className="absolute -top-4 -left-4 -right-4 h-8 overflow-hidden rounded-t-2xl"><img src="https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=800&q=90" alt="Plants" className="w-full h-full object-cover" /></div>
-              <div className="absolute -bottom-4 -left-4 -right-4 h-8 overflow-hidden rounded-b-2xl"><img src="https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=800&q=90" alt="Plants" className="w-full h-full object-cover" /></div>
-            </div>
+            <div className="absolute -inset-4" style={{ background: 'linear-gradient(135deg, rgba(184,92,56,0.2), rgba(139,69,19,0.1))', clipPath: 'polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)', filter: 'blur(2px)' }} />
+            <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=95" alt="JCA Office" className="relative w-full h-96 object-cover" style={{ clipPath: 'polygon(3% 0%, 97% 0%, 100% 100%, 0% 100%)', boxShadow: '15px 15px 0 rgba(139,69,19,0.2), 25px 25px 50px rgba(0,0,0,0.15)' }} />
           </div>
           <div className={`transition-all duration-1000 delay-300 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
-            <div className="flex items-center gap-3 mb-6"><TreePine className="w-8 h-8 text-emerald-400" /><h2 className="text-4xl font-light text-white tracking-wide">{t.about.title}</h2></div>
-            <p className="text-white/70 text-lg leading-relaxed mb-4">{t.about.description}</p>
-            <p className="text-white/70 text-lg leading-relaxed mb-8">{t.about.description2}</p>
-            <div className="grid grid-cols-2 gap-6">
-              {stats.map((stat, i) => (<div key={i} className="bg-emerald-900/50 backdrop-blur-sm rounded-xl p-6 border border-emerald-800/50"><stat.icon className="w-6 h-6 text-emerald-400 mb-3" /><div className="text-3xl font-light text-white mb-1"><AnimatedCounter end={stat.value} suffix={stat.suffix || ''} /></div><div className="text-emerald-400/70 text-sm">{stat.label}</div></div>))}
+            <div className="flex items-center gap-3 mb-6">
+              <Gem className="w-8 h-8" style={{ color: '#8B4513' }} />
+              <h2 className="text-4xl font-bold tracking-wide" style={{ color: '#1F2937' }}>{t.about.title}</h2>
+            </div>
+            <p className="text-lg leading-relaxed mb-4" style={{ color: '#6B7280' }}>{t.about.description}</p>
+            <p className="text-lg leading-relaxed mb-8" style={{ color: '#6B7280' }}>{t.about.description2}</p>
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map((stat, i) => (
+                <CubisticCard key={i}>
+                  <div className="p-6 transition-all duration-300" style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)', border: '2px solid rgba(139,69,19,0.2)', clipPath: 'polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)', boxShadow: '8px 8px 0 rgba(139,69,19,0.1)' }}>
+                    <stat.icon className="w-6 h-6 mb-3" style={{ color: '#8B4513' }} />
+                    <div className="text-3xl font-bold mb-1" style={{ color: '#1F2937' }}><AnimatedCounter end={stat.value} suffix={stat.suffix || ''} /></div>
+                    <div className="text-sm font-medium" style={{ color: '#9CA3AF' }}>{stat.label}</div>
+                  </div>
+                </CubisticCard>
+              ))}
             </div>
           </div>
         </div>
@@ -261,33 +354,48 @@ function ProjectsSection() {
   const { t, lang, isRTL } = useLanguage();
   const { ref, isInView } = useInView();
   return (
-    <section id="projects" className="relative py-32 bg-gradient-to-b from-emerald-950 via-emerald-900 to-emerald-950" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="absolute top-0 left-0 w-40 h-80 overflow-hidden opacity-40"><img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400&q=90" alt="Plants" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-r from-transparent to-emerald-950" /></div>
-      <div className="absolute top-0 right-0 w-40 h-80 overflow-hidden opacity-40"><img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400&q=90" alt="Plants" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-l from-transparent to-emerald-950" /></div>
+    <section id="projects" className="relative py-32" dir={isRTL ? 'rtl' : 'ltr'}>
+      <MarbleBackground />
+      <CubisticShapes />
       <div ref={ref} className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16"><Leaf className="w-10 h-10 text-emerald-400 mx-auto mb-4" /><h2 className="text-4xl font-light text-white tracking-wide mb-4">{t.projects.title}</h2><div className="w-24 h-1 bg-emerald-500 mx-auto rounded-full" /></div>
+        <div className="text-center mb-16">
+          <Gem className="w-10 h-10 mx-auto mb-4" style={{ color: '#8B4513' }} />
+          <h2 className="text-4xl font-bold tracking-wide mb-4" style={{ color: '#1F2937' }}>{t.projects.title}</h2>
+          <div className="w-32 h-2 mx-auto" style={{ background: 'linear-gradient(90deg, #B85C38, #8B4513, #D4A574)', clipPath: 'polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%)' }} />
+        </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, i) => (
             <Dialog key={project.id}>
               <DialogTrigger asChild>
                 <div className={`group cursor-pointer transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{ transitionDelay: `${i * 100}ms` }}>
-                  <TiltCard3D className="group">
-                    <Card className="overflow-hidden bg-emerald-900/50 border-emerald-800/50 backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-500">
+                  <CubisticCard className="group">
+                    <Card className="overflow-hidden border-0" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(10px)', clipPath: 'polygon(0% 0%, 100% 0%, 97% 100%, 3% 100%)', boxShadow: '10px 10px 0 rgba(139,69,19,0.15), 20px 20px 40px rgba(0,0,0,0.1)' }}>
                       <div className="relative h-64 overflow-hidden">
                         <img src={project.image} alt={project.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-transparent to-transparent" />
-                        <div className="absolute bottom-4 left-4 right-4"><span className={`inline-block px-3 py-1 rounded-full text-xs ${project.status === 'completed' ? 'bg-emerald-500/80 text-white' : 'bg-amber-500/80 text-white'}`}>{project.status === 'completed' ? t.projects.completed : t.projects.inProgress} {project.year}</span></div>
+                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 50%)' }} />
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <span className="inline-block px-4 py-1 text-xs font-medium text-white" style={{ background: project.status === 'completed' ? 'linear-gradient(135deg, #8B4513, #654321)' : 'linear-gradient(135deg, #B85C38, #A0522D)', clipPath: 'polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)' }}>{project.status === 'completed' ? t.projects.completed : t.projects.inProgress} {project.year}</span>
+                        </div>
                       </div>
-                      <CardContent className="p-6"><h3 className="text-xl font-medium text-white mb-2">{project.name}</h3><p className="text-white/60 text-sm line-clamp-2">{lang === 'en' ? project.descriptionEn : project.description}</p></CardContent>
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold mb-2" style={{ color: '#1F2937' }}>{project.name}</h3>
+                        <p className="text-sm line-clamp-2" style={{ color: '#6B7280' }}>{lang === 'en' ? project.descriptionEn : project.description}</p>
+                      </CardContent>
                     </Card>
-                  </TiltCard3D>
+                  </CubisticCard>
                 </div>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-emerald-950 border-emerald-800">
-                <DialogHeader><DialogTitle className="text-2xl text-white">{project.name}</DialogTitle></DialogHeader>
+              <DialogContent className="max-w-4xl border-0" style={{ background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(20px)', clipPath: 'polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%)' }}>
+                <DialogHeader><DialogTitle className="text-2xl font-bold" style={{ color: '#1F2937' }}>{project.name}</DialogTitle></DialogHeader>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <img src={project.image} alt={project.name} className="w-full h-64 object-cover rounded-lg" />
-                  <div><p className="text-white/70 mb-4">{lang === 'en' ? project.descriptionEn : project.description}</p><div className="space-y-2 text-sm"><div className="flex justify-between text-white/60"><span>{t.projects.area}:</span><span className="text-emerald-400">{project.area}</span></div><div className="flex justify-between text-white/60"><span>{t.projects.client}:</span><span className="text-emerald-400">{project.client}</span></div></div></div>
+                  <img src={project.image} alt={project.name} className="w-full h-64 object-cover" style={{ clipPath: 'polygon(3% 0%, 97% 0%, 100% 100%, 0% 100%)' }} />
+                  <div>
+                    <p className="mb-4" style={{ color: '#6B7280' }}>{lang === 'en' ? project.descriptionEn : project.description}</p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between p-2" style={{ background: 'rgba(139,69,19,0.05)' }}><span style={{ color: '#9CA3AF' }}>{t.projects.area}:</span><span style={{ color: '#8B4513', fontWeight: 600 }}>{project.area}</span></div>
+                      <div className="flex justify-between p-2" style={{ background: 'rgba(139,69,19,0.05)' }}><span style={{ color: '#9CA3AF' }}>{t.projects.client}:</span><span style={{ color: '#8B4513', fontWeight: 600 }}>{project.client}</span></div>
+                    </div>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -303,11 +411,24 @@ function AwardsSection() {
   const { ref, isInView } = useInView();
   return (
     <section id="awards" className="relative py-32 overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="absolute inset-0"><img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=1920&q=95" alt="Green architecture" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-emerald-950/90" /></div>
+      <MarbleBackground />
+      <CubisticShapes />
       <div ref={ref} className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16"><Award className="w-10 h-10 text-emerald-400 mx-auto mb-4" /><h2 className="text-4xl font-light text-white tracking-wide mb-2">{t.awards.title}</h2><p className="text-emerald-400/70">{t.awards.subtitle}</p></div>
+        <div className="text-center mb-16">
+          <Award className="w-10 h-10 mx-auto mb-4" style={{ color: '#8B4513' }} />
+          <h2 className="text-4xl font-bold tracking-wide mb-2" style={{ color: '#1F2937' }}>{t.awards.title}</h2>
+          <p className="font-medium" style={{ color: '#8B4513' }}>{t.awards.subtitle}</p>
+        </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {awards.map((award, i) => (<div key={i} className={`bg-emerald-900/50 backdrop-blur-sm rounded-xl p-6 border border-emerald-800/50 hover:border-emerald-500/50 transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: `${i * 100}ms` }}><div className="text-emerald-400 text-sm mb-2">{award.year}</div><h3 className="text-white font-medium mb-2">{award.title}</h3><p className="text-white/50 text-sm">{award.project}</p></div>))}
+          {awards.map((award, i) => (
+            <CubisticCard key={i}>
+              <div className={`p-6 transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: `${i * 100}ms`, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(10px)', border: '2px solid rgba(139,69,19,0.15)', clipPath: 'polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)', boxShadow: '6px 6px 0 rgba(139,69,19,0.1)' }}>
+                <div className="text-sm font-bold mb-2" style={{ color: '#8B4513' }}>{award.year}</div>
+                <h3 className="font-semibold mb-2" style={{ color: '#1F2937' }}>{award.title}</h3>
+                <p className="text-sm" style={{ color: '#9CA3AF' }}>{award.project}</p>
+              </div>
+            </CubisticCard>
+          ))}
         </div>
       </div>
     </section>
@@ -318,19 +439,35 @@ function VideosSection() {
   const { t, isRTL } = useLanguage();
   const { ref, isInView } = useInView();
   return (
-    <section id="videos" className="relative py-32 bg-emerald-950" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div ref={ref} className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16"><Play className="w-10 h-10 text-emerald-400 mx-auto mb-4" /><h2 className="text-4xl font-light text-white tracking-wide mb-2">{t.videos.title}</h2><p className="text-emerald-400/70">{t.videos.subtitle}</p></div>
+    <section id="videos" className="relative py-32" dir={isRTL ? 'rtl' : 'ltr'}>
+      <MarbleBackground />
+      <CubisticShapes />
+      <div ref={ref} className="relative z-10 max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <Play className="w-10 h-10 mx-auto mb-4" style={{ color: '#8B4513' }} />
+          <h2 className="text-4xl font-bold tracking-wide mb-2" style={{ color: '#1F2937' }}>{t.videos.title}</h2>
+          <p className="font-medium" style={{ color: '#8B4513' }}>{t.videos.subtitle}</p>
+        </div>
         <div className="grid md:grid-cols-3 gap-8">
           {videos.map((video, i) => (
             <Dialog key={video.id}>
               <DialogTrigger asChild>
                 <div className={`group cursor-pointer transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`} style={{ transitionDelay: `${i * 150}ms` }}>
-                  <div className="relative h-48 rounded-xl overflow-hidden mb-4"><img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" /><div className="absolute inset-0 bg-emerald-950/50 flex items-center justify-center group-hover:bg-emerald-950/30 transition-colors"><div className="w-16 h-16 rounded-full bg-emerald-500/80 flex items-center justify-center group-hover:scale-110 transition-transform"><Play className="w-8 h-8 text-white ml-1" /></div></div></div>
-                  <h3 className="text-white font-medium">{video.title}</h3><p className="text-white/50 text-sm">{video.description}</p>
+                  <div className="relative h-48 overflow-hidden mb-4" style={{ clipPath: 'polygon(3% 0%, 97% 0%, 100% 100%, 0% 100%)', boxShadow: '10px 10px 0 rgba(139,69,19,0.15), 20px 20px 40px rgba(0,0,0,0.1)' }}>
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(2px)' }}>
+                      <div className="w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110" style={{ background: 'linear-gradient(135deg, #B85C38, #8B4513)', clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', boxShadow: '0 10px 30px -10px rgba(139,69,19,0.5)' }}>
+                        <Play className="w-6 h-6 text-white ml-1" fill="white" />
+                      </div>
+                    </div>
+                  </div>
+                  <h3 className="font-semibold mb-1" style={{ color: '#1F2937' }}>{video.title}</h3>
+                  <p className="text-sm" style={{ color: '#9CA3AF' }}>{video.description}</p>
                 </div>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-emerald-950 border-emerald-800"><DialogHeader><DialogTitle className="text-white">{video.title}</DialogTitle></DialogHeader><div className="aspect-video"><iframe src={video.embedUrl} className="w-full h-full rounded-lg" allowFullScreen /></div></DialogContent>
+              <DialogContent className="max-w-4xl p-0 border-0 overflow-hidden" style={{ background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(20px)', clipPath: 'polygon(1% 0%, 99% 0%, 100% 100%, 0% 100%)' }}>
+                <div className="aspect-video"><iframe src={video.embedUrl} className="w-full h-full" allowFullScreen /></div>
+              </DialogContent>
             </Dialog>
           ))}
         </div>
@@ -342,34 +479,55 @@ function VideosSection() {
 function ContactSection() {
   const { t, isRTL } = useLanguage();
   const { ref, isInView } = useInView();
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); console.log('Form submitted:', formData); setFormData({ name: '', email: '', message: '' }); };
   return (
-    <section id="contact" className="relative py-32 overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="absolute inset-0"><img src="https://images.unsplash.com/photo-1534237710431-e2fc698436d0?w=1920&q=95" alt="Living wall" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-emerald-950/85" /></div>
+    <section id="contact" className="relative py-32" dir={isRTL ? 'rtl' : 'ltr'}>
+      <MarbleBackground />
+      <CubisticShapes />
       <div ref={ref} className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16">
           <div className={`transition-all duration-1000 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'}`}>
-            <div className="flex items-center gap-3 mb-6"><Mail className="w-8 h-8 text-emerald-400" /><h2 className="text-4xl font-light text-white tracking-wide">{t.contact.title}</h2></div>
-            <p className="text-white/70 text-lg mb-8">{t.contact.subtitle}</p>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4"><div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center"><Building2 className="w-6 h-6 text-emerald-400" /></div><div><p className="text-white font-medium">{t.contact.company}</p><p className="text-white/60 text-sm">Nad Ostrovem 1119/7, 147 00 Praha 4</p></div></div>
-              <div className="flex items-center gap-4"><div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center"><Phone className="w-6 h-6 text-emerald-400" /></div><div><p className="text-white font-medium">{t.contact.phone}</p><p className="text-white/60 text-sm">+420-2-2680 5329</p></div></div>
-              <div className="flex items-center gap-4"><div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center"><Mail className="w-6 h-6 text-emerald-400" /></div><div><p className="text-white font-medium">Email</p><p className="text-white/60 text-sm">info@jakubcigler.archi</p></div></div>
-              <div className="flex items-center gap-4"><div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center"><Globe className="w-6 h-6 text-emerald-400" /></div><div><p className="text-white font-medium">Web</p><p className="text-white/60 text-sm">www.jakubcigler.archi</p></div></div>
+            <div className="flex items-center gap-3 mb-6">
+              <Mail className="w-8 h-8" style={{ color: '#8B4513' }} />
+              <h2 className="text-4xl font-bold tracking-wide" style={{ color: '#1F2937' }}>{t.contact.title}</h2>
+            </div>
+            <p className="text-lg mb-8 font-medium" style={{ color: '#8B4513' }}>{t.contact.subtitle}</p>
+            <div className="space-y-4">
+              {[
+                { icon: Building2, title: t.contact.company, subtitle: 'Nad Ostrovem 1119/7, 147 00 Praha 4' },
+                { icon: Phone, title: t.contact.phone, subtitle: '+420-2-2680 5329' },
+                { icon: Mail, title: 'Email', subtitle: 'info@jakubcigler.archi' },
+                { icon: Globe, title: 'Web', subtitle: 'www.jakubcigler.archi' }
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4 p-4" style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)', border: '2px solid rgba(139,69,19,0.15)', clipPath: 'polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%)' }}>
+                  <item.icon className="w-6 h-6 mt-1" style={{ color: '#8B4513' }} />
+                  <div>
+                    <p className="font-semibold" style={{ color: '#1F2937' }}>{item.title}</p>
+                    <p className="text-sm" style={{ color: '#6B7280' }}>{item.subtitle}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div className={`transition-all duration-1000 delay-300 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
-            <TiltCard3D>
-              <form onSubmit={handleSubmit} className="bg-emerald-900/50 backdrop-blur-xl rounded-2xl p-8 border border-emerald-800/50">
-                <div className="space-y-6">
-                  <div><label className="block text-white/70 text-sm mb-2">{t.contact.name}</label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="bg-emerald-950/50 border-emerald-700 text-white placeholder:text-white/30 focus:border-emerald-500" placeholder={t.contact.name} /></div>
-                  <div><label className="block text-white/70 text-sm mb-2">{t.contact.email}</label><Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-emerald-950/50 border-emerald-700 text-white placeholder:text-white/30 focus:border-emerald-500" placeholder={t.contact.email} /></div>
-                  <div><label className="block text-white/70 text-sm mb-2">{t.contact.message}</label><Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="bg-emerald-950/50 border-emerald-700 text-white placeholder:text-white/30 focus:border-emerald-500 min-h-32" placeholder={t.contact.message} /></div>
-                  <Button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-400 text-white py-6 rounded-xl transition-all duration-300 hover:scale-105">{t.contact.send}<ArrowRight className="ml-2 w-5 h-5" /></Button>
+            <CubisticCard>
+              <form className="p-8" style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', border: '2px solid rgba(139,69,19,0.2)', clipPath: 'polygon(3% 0%, 97% 0%, 100% 100%, 0% 100%)', boxShadow: '15px 15px 0 rgba(139,69,19,0.1), 30px 30px 60px rgba(0,0,0,0.1)' }}>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#6B7280' }}>{t.contact.name}</label>
+                  <Input placeholder={t.contact.name} className="border-2" style={{ background: 'rgba(255,255,255,0.9)', borderColor: 'rgba(139,69,19,0.2)', clipPath: 'polygon(1% 0%, 99% 0%, 100% 100%, 0% 100%)' }} />
                 </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#6B7280' }}>{t.contact.email}</label>
+                  <Input type="email" placeholder={t.contact.email} className="border-2" style={{ background: 'rgba(255,255,255,0.9)', borderColor: 'rgba(139,69,19,0.2)', clipPath: 'polygon(1% 0%, 99% 0%, 100% 100%, 0% 100%)' }} />
+                </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#6B7280' }}>{t.contact.message}</label>
+                  <Textarea placeholder={t.contact.message} className="border-2 min-h-32" style={{ background: 'rgba(255,255,255,0.9)', borderColor: 'rgba(139,69,19,0.2)', clipPath: 'polygon(1% 0%, 99% 0%, 100% 100%, 0% 100%)' }} />
+                </div>
+                <Button type="submit" className="w-full py-6 text-white font-medium transition-all duration-300 hover:scale-105" style={{ background: 'linear-gradient(135deg, #B85C38, #8B4513)', clipPath: 'polygon(3% 0%, 97% 0%, 100% 50%, 97% 100%, 3% 100%, 0% 50%)', boxShadow: '0 15px 35px -10px rgba(139,69,19,0.4)' }}>
+                  {t.contact.send} <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
               </form>
-            </TiltCard3D>
+            </CubisticCard>
           </div>
         </div>
       </div>
@@ -379,12 +537,11 @@ function ContactSection() {
 
 function Footer() {
   return (
-    <footer className="relative py-12 bg-emerald-950 border-t border-emerald-900">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3"><Leaf className="w-6 h-6 text-emerald-400" /><span className="text-white/70 text-sm">JAKUB CIGLER ARCHITEKTI, a.s.</span></div>
-          <p className="text-white/50 text-sm">© 2001-2026 All rights reserved</p>
-        </div>
+    <footer className="relative py-12" style={{ background: 'linear-gradient(135deg, rgba(250,248,245,0.95), rgba(255,255,255,0.95))', borderTop: '2px solid rgba(139,69,19,0.2)' }}>
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <Gem className="w-8 h-8 mx-auto mb-4" style={{ color: '#8B4513' }} />
+        <p className="font-bold tracking-wide mb-2" style={{ color: '#1F2937' }}>JAKUB CIGLER ARCHITEKTI, a.s.</p>
+        <p className="text-sm" style={{ color: '#9CA3AF' }}>&copy; 2001-2026 All rights reserved</p>
       </div>
     </footer>
   );
@@ -397,8 +554,19 @@ function App() {
   const isRTL = lang === 'ar';
   return (
     <LanguageContext.Provider value={{ lang, setLang, t, isRTL }}>
-      <div className={`min-h-screen bg-emerald-950 ${isRTL ? 'rtl' : 'ltr'}`}>
-        {loading ? (<LoadingScreen onComplete={() => setLoading(false)} />) : (<><Navigation /><HeroSection /><AboutSection /><ProjectsSection /><AwardsSection /><VideosSection /><ContactSection /><Footer /></>)}
+      <div className={`min-h-screen ${isRTL ? 'rtl' : 'ltr'}`} style={{ fontFamily: "'Inter', sans-serif" }}>
+        {loading ? <LoadingScreen onComplete={() => setLoading(false)} /> : (
+          <>
+            <Navigation />
+            <HeroSection />
+            <AboutSection />
+            <ProjectsSection />
+            <AwardsSection />
+            <VideosSection />
+            <ContactSection />
+            <Footer />
+          </>
+        )}
       </div>
     </LanguageContext.Provider>
   );
