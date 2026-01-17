@@ -162,6 +162,71 @@ html {
   }
 }
 
+/* Cloud animations */
+@keyframes cloud1 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(100px); }
+}
+
+@keyframes cloud2 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-80px); }
+}
+
+@keyframes cloud3 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(60px); }
+}
+
+/* 3D floating elements */
+@keyframes float3d {
+  0%, 100% { 
+    transform: translateY(0) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateY(-20px) rotateX(5deg) rotateY(5deg);
+  }
+  50% { 
+    transform: translateY(-30px) rotateX(0deg) rotateY(10deg);
+  }
+  75% {
+    transform: translateY(-15px) rotateX(-5deg) rotateY(5deg);
+  }
+}
+
+@keyframes float3d-slow {
+  0%, 100% { 
+    transform: translateY(0) rotateX(0deg) rotateY(0deg);
+  }
+  50% { 
+    transform: translateY(-40px) rotateX(10deg) rotateY(-10deg);
+  }
+}
+
+/* Grass sway animation */
+@keyframes grass {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* Slow pulse */
+@keyframes pulse-slow {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Slow spin */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ============================================
    ANIMATION UTILITY CLASSES
    ============================================ */
@@ -211,6 +276,39 @@ html {
 
 .animate-loading-bar {
   animation: loading-bar 1.5s ease-out forwards;
+}
+
+.animate-cloud1 {
+  animation: cloud1 30s ease-in-out infinite;
+}
+
+.animate-cloud2 {
+  animation: cloud2 25s ease-in-out infinite;
+}
+
+.animate-cloud3 {
+  animation: cloud3 35s ease-in-out infinite;
+}
+
+.animate-float3d {
+  animation: float3d 8s ease-in-out infinite;
+}
+
+.animate-float3d-slow {
+  animation: float3d-slow 12s ease-in-out infinite;
+}
+
+.animate-grass {
+  animation: grass 3s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
 }
 
 /* ============================================
